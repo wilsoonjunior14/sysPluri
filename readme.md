@@ -2,6 +2,17 @@
 <ul>
   <li>PHP 7</li>
   <li>Composer</li>
+  <li>MySQL</li>
+</ul>
+
+<h3>Iniciando a aplicação</h3>
+<ul>
+  <li>Baixando o projeto pelo git: <b>git clone https://github.com/wilsoonjunior14/sysPluri.git</b></li>
+  <li>Após isso, ir até a pasta do projeto via cmd e usar o comando: <b>composer install</b></li>
+  <li>Verificar conexão com a base de dados no arquivo .env localizado na raiz do projeto</li>
+  <li>rodar o projeto com o comando <b>php artisan serve</b> ou colocar o projeto na pasta <b>htdocs</b> do <b>xampp</b> por exemplo</li>
+  <li>Verificar se as rotas estão funcionando adequadamente. Por exemplo: <b>http://localhost:8000/api/aluno</b> para retornar a lista de alunos</li>
+  <li>Para executar os testes automáticos basta rodar o comando: <b>./vendor/bin/phpunit</b> na raiz do projeto pelo terminal ou cmd</li>
 </ul>
 
 <p align="center"><img src="https://laravel.com/assets/img/components/logo-laravel.svg"></p>
