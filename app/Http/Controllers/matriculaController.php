@@ -70,4 +70,9 @@ class matriculaController extends Controller
         DB::commit();
         return response()->json(["mensagem" => "Aluno matriculado com sucesso no(s) curso(s).", "status" => true]);
     }
+
+    public function search(){
+        $returns = $this->matricula->searchMatriculaPorIdade(15);
+        return response()->json($returns);
+    }
 }

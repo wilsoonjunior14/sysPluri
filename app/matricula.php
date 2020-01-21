@@ -3,14 +3,36 @@
 namespace sysPluri;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Builder;
 
 class matricula extends Model
 {
     protected $table = "matricula";
     protected $fillable = ['id_curso', 'id_aluno'];
 
+    public function alunos(){
+        return $this->hasMany('sysPluri\aluno', 'id', 'id_aluno');
+    }
+
     public function searchAll(){
         return $this->all();
+    }
+
+    public function searchMatriculaPorIdade($idadeMinima, $idadeMaxima = null){
+        $ano        = date('Y') - $idadeMinima;
+        $dataMinima = $ano. "-". (date('m')+1) . "-" . date('d');
+
+        if ($idadeMaxima === null){
+            
+            return $this->whereHas('alunos', function($q) use ($dataMinima){
+                $q->where("data_nascimento", ">", $dataMinima);
+            })
+            ->with('alunos')
+            ->get();
+
+        }else{
+
+        }
     }
 
     public function check($object){
