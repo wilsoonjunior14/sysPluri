@@ -1,3 +1,9 @@
+<h3>Requisitos</h3>
+<ul>
+  <li>PHP 7</li>
+  <li>Composer</li>
+</ul>
+
 <p align="center"><img src="https://laravel.com/assets/img/components/logo-laravel.svg"></p>
 
 <p align="center">
