@@ -11,6 +11,10 @@ class aluno extends Model
     protected $table = "aluno";
     protected $fillable = ['nome', 'email', 'sexo', 'data_nascimento'];
 
+    public function matriculas(){
+        return $this->hasMany('sysPluri\matricula', 'id', 'id_aluno');
+    }
+
     public function searchAll(){
         $alunos = aluno::all();
         return $alunos;

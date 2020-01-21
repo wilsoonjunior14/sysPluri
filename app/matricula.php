@@ -4,35 +4,95 @@ namespace sysPluri;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
+use sysPluri\curso;
 
 class matricula extends Model
 {
     protected $table = "matricula";
     protected $fillable = ['id_curso', 'id_aluno'];
 
-    public function alunos(){
-        return $this->hasMany('sysPluri\aluno', 'id', 'id_aluno');
+    public function aluno(){
+        return $this->belongsTo('sysPluri\aluno', 'id_aluno', 'id');
+    }
+
+    public function curso(){
+        return $this->belongsTo('sysPluri\curso', 'id_curso', 'id');
     }
 
     public function searchAll(){
         return $this->all();
     }
 
-    public function searchMatriculaPorIdade($idadeMinima, $idadeMaxima = null){
-        $ano        = date('Y') - $idadeMinima;
-        $dataMinima = $ano. "-". (date('m')+1) . "-" . date('d');
+    public function countAlunosSexo($matriculas, $returns){
+        // captura quantidade por sexo
+        foreach ($matriculas as $mat){
+            if ($mat["aluno"]["sexo"] == "Masculino"){ $returns["sexo"]["Masculino"] += 1; }
+            else if ($mat["aluno"]["sexo"] == "Feminino"){ $returns["sexo"]["Feminino"] += 1; }
+            else { $returns["sexo"]["Outro"] += 1; }
+        }
+        return $returns;
+    }
 
-        if ($idadeMaxima === null){
+    public function searchMatriculaPorIdade($idadeMinima = null, $idadeMaxima = null){
+        $returns = ['curso' => [], 'sexo' => ["Masculino" => 0, "Feminino" => 0, "Outro" => 0]];
+        $cursos = curso::all()->toArray();
+
+        if ($idadeMinima != null && $idadeMaxima == null){
+            $ano        = date('Y') - $idadeMinima;
+            $dataMinima = $ano. "-". (date('m')+1) . "-" . date('d');            
             
-            return $this->whereHas('alunos', function($q) use ($dataMinima){
-                $q->where("data_nascimento", ">", $dataMinima);
-            })
-            ->with('alunos')
-            ->get();
+            foreach ($cursos as $curso){
 
-        }else{
+                // Captura todas as matriculas que possuem idade menor que a informada
+                $matriculas = matricula::with('aluno')
+                ->whereHas('aluno', function($q) use ($dataMinima){ $q->where("data_nascimento", ">", $dataMinima); })
+                ->where('id_curso', '=', $curso['id'])
+                ->get()
+                ->toArray();
+                $returns = $this->countAlunosSexo($matriculas, $returns);
+                $returns["curso"][] = [$curso["titulo"] => count($matriculas)];
+            }
+        }
+
+        if ($idadeMinima != null && $idadeMaxima != null){
+            $ano        = date('Y') - $idadeMinima;
+            $dataMinima = $ano. "-12-31"; 
+            $anoMaximo  = date('Y') - $idadeMaxima;
+            $dataMaxima = $anoMaximo. "-01-01";           
+            
+            foreach ($cursos as $curso){
+
+                // Captura todas as matriculas que possuem idade menor que a informada
+                $matriculas = matricula::with('aluno')
+                ->whereHas('aluno', function($q) use ($dataMinima, $dataMaxima){ $q->whereBetween("data_nascimento", [$dataMaxima, $dataMinima]); })
+                ->where('id_curso', '=', $curso['id'])
+                ->get()
+                ->toArray();
+                $returns = $this->countAlunosSexo($matriculas, $returns);
+                $returns["curso"][] = [$curso["titulo"] => count($matriculas)];
+            }
 
         }
+
+        if ($idadeMinima == null && $idadeMaxima != null){
+            $ano        = date('Y') - $idadeMaxima;
+            $dataMaxima = $ano. "-". (date('m')+1) . "-" . date('d');            
+            
+            foreach ($cursos as $curso){
+
+                // Captura todas as matriculas que possuem idade menor que a informada
+                $matriculas = matricula::with('aluno')
+                ->whereHas('aluno', function($q) use ($dataMaxima){ $q->where("data_nascimento", "<", $dataMaxima); })
+                ->where('id_curso', '=', $curso['id'])
+                ->get()
+                ->toArray();
+                $returns = $this->countAlunosSexo($matriculas, $returns);
+                $returns["curso"][] = [$curso["titulo"] => count($matriculas)];
+                
+            }
+        }
+        
+        return $returns;
     }
 
     public function check($object){

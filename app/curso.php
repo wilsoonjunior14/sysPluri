@@ -9,6 +9,10 @@ class curso extends Model
     protected $table = "curso";
     protected $fillable = ['descricao', 'titulo'];
 
+    public function matriculas(){
+        return $this->hasMany('sysPluri\matricula', 'id_curso', 'id');
+    }
+
     public function searchAll(){
         return curso::all();
     }
