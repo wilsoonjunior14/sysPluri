@@ -16,28 +16,37 @@ class alunoController extends Controller
         $this->aluno = new aluno();
     }
 
-    function index(){
+    public function index(){
         $alunos = $this->aluno->searchAll();
         return response()->json($alunos);
     }
 
-    function get($id){
+    public function get($id){
         $aluno = $this->aluno::find($id);
         return response()->json($aluno);
     }
 
-    function add(){
+    public function add(){
         $returns = $this->aluno->saveAluno(Request::all());
         return response()->json($returns);
     }
 
+    public function search(){
+        $object = Request::all();
+        if (!empty($object["nome"]) && strlen($object["nome"]) > 255) return ["mensagem" => "Nome de aluno muito extenso! Máximo de 255 caracteres permitidos", "status" => false];
+        if (!empty($object["email"]) && strlen($object["email"]) > 255) return ["mensagem" => "Email de aluno muito extenso! Máximo de 255 caracteres permitidos", "status" => false];
+        
+        $returns = $this->aluno->searchAluno($object);
+        return response()->json($returns);
+    }
 
-    function edit(){
+
+    public function edit(){
         $returns = $this->aluno->editAluno(Request::all());
         return response()->json($returns);
     }
 
-    function delete(){
+    public function delete(){
         $returns = $this->aluno->deleteAluno(Request::all());
         return response()->json($returns);
     }

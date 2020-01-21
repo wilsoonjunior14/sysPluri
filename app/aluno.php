@@ -16,6 +16,14 @@ class aluno extends Model
         return $alunos;
     }
 
+    public function searchAluno($object){
+        $options = [];
+        if (isset($object["nome"])) $options[]  = ["nome", "like", "%{$object['nome']}%"];
+        if (isset($object["email"])) $options[] = ["email", "like", "%{$object['email']}%"];
+        
+        return $this::where($options)->get();
+    }
+
     public function checkAluno($object){
         if (strlen($object["nome"]) <= 0 || strlen($object["nome"]) > 255) return ["mensagem" => "Nome de aluno inválido! Nome deve conter entre 0 e 255 caracteres", "status" => false];
         if (strlen($object["email"]) <= 0 || strlen($object["email"]) > 255 || !filter_var($object["email"], FILTER_VALIDATE_EMAIL)) return ["mensagem" => "Email de aluno inválido! Email deve ser válido e conter entre 0 e 255 caracteres", "status" => false];
@@ -35,6 +43,7 @@ class aluno extends Model
     public function saveAluno($object){
         $check = $this->checkAluno($object);
         if ($check["status"]){
+            $object["data_nascimento"] = config::formataDataBase($object["data_nascimento"]);
             $newAluno = new aluno($object);
             $returns = $this->saveOrUpdateAluno($newAluno);
             return $returns;
@@ -44,7 +53,7 @@ class aluno extends Model
     }
 
     public function editAluno($object){
-        if (strlen($object["id"]) <= 0) return ["mensagem" => "Identificador do aluno não informado!", "status" => false];
+        if (!isset($object["id"]) || empty($object["id"])) return ["mensagem" => "Identificador do aluno não informado!", "status" => false];
         $check = $this->checkAluno($object);
         if ($check["status"]){
             $aluno = aluno::find($object["id"]);

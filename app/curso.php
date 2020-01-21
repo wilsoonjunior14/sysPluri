@@ -37,7 +37,7 @@ class curso extends Model
     }
 
     public function editCurso($object){
-        if (strlen($object["id"]) <= 0) return ["mensagem" => "Identificador do curso não informado!","status" => false];
+        if (!isset($object["id"]) || empty($object["id"])) return ["mensagem" => "Identificador do curso não informado!","status" => false];
         $check = $this->check($object);
         if ($check["status"]){
             $curso = curso::find($object["id"]);
