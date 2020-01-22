@@ -73,11 +73,11 @@ class matriculaController extends Controller
 
     public function search(){
         $returns = [];
-        $returns[] = ['Alunos com menos de 15 anos de idade'     => $this->matricula->searchMatriculaPorIdade(15)];
-        $returns[] = ['Alunos com idade entre 15 anos e 18 anos' => $this->matricula->searchMatriculaPorIdade(15, 18)];
-        $returns[] = ['Alunos com idade entre 19 anos e 24 anos' => $this->matricula->searchMatriculaPorIdade(19, 24)];
-        $returns[] = ['Alunos com idade entre 25 anos e 30 anos' => $this->matricula->searchMatriculaPorIdade(25, 30)];
-        $returns[] = ['Alunos com mais de 30 anos de idade'      => $this->matricula->searchMatriculaPorIdade(null, 30)];
+        $returns[] = ['descricao' => 'Alunos com menos de 15 anos de idade',    'data' => $this->matricula->searchMatriculaPorIdade(15)];
+        $returns[] = ['descricao' => 'Alunos com idade entre 15 anos e 18 anos','data' => $this->matricula->searchMatriculaPorIdade(15, 18)];
+        $returns[] = ['descricao' => 'Alunos com idade entre 19 anos e 24 anos','data' => $this->matricula->searchMatriculaPorIdade(19, 24)];
+        $returns[] = ['descricao' => 'Alunos com idade entre 25 anos e 30 anos','data' => $this->matricula->searchMatriculaPorIdade(25, 30)];
+        $returns[] = ['descricao' => 'Alunos com mais de 30 anos de idade',     'data' => $this->matricula->searchMatriculaPorIdade(null, 30)];
         return response()->json($returns);
     }
 }

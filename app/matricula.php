@@ -26,16 +26,25 @@ class matricula extends Model
     public function countAlunosSexo($matriculas, $returns){
         // captura quantidade por sexo
         foreach ($matriculas as $mat){
-            if ($mat["aluno"]["sexo"] == "Masculino"){ $returns["sexo"]["Masculino"] += 1; }
-            else if ($mat["aluno"]["sexo"] == "Feminino"){ $returns["sexo"]["Feminino"] += 1; }
-            else { $returns["sexo"]["Outro"] += 1; }
+            // verifica se aluno já foi contabilizado
+            if (!in_array($mat["aluno"]["id"], $returns["ids"])){
+                if ($mat["aluno"]["sexo"] == "Masculino"){ 
+                    $returns["sexo"]["Masculino"] += 1;
+                }else if ($mat["aluno"]["sexo"] == "Feminino"){
+                    $returns["sexo"]["Feminino"] += 1;
+                }else{
+                    $returns["sexo"]["Outro"] += 1; 
+                }
+                $returns["ids"][] = $mat["id_aluno"];
+            }        
         }
         return $returns;
     }
 
     public function searchMatriculaPorIdade($idadeMinima = null, $idadeMaxima = null){
-        $returns = ['curso' => [], 'sexo' => ["Masculino" => 0, "Feminino" => 0, "Outro" => 0]];
-        $cursos = curso::all()->toArray();
+        $returns  = ['curso' => [], 'sexo' => ["Masculino" => 0, "Feminino" => 0, "Outro" => 0], 'ids' => []];
+        $idsAlunos= [];
+        $cursos   = curso::all()->toArray();
 
         if ($idadeMinima != null && $idadeMaxima == null){
             $ano        = date('Y') - $idadeMinima;
@@ -91,7 +100,6 @@ class matricula extends Model
                 
             }
         }
-        
         return $returns;
     }
 
